@@ -10,7 +10,10 @@ def getreader(config, filetype=None, args = None):
         filetype = filetype.lower()
 
     if filetype == "bam" or filetype == "cram" :
-        return bam.BamReader(filetype, path, args)
+        if "indexURL" in config.keys():
+            return bam.BamReader(filetype, path, args, config["indexURL"])
+        else:
+            return bam.BamReader(filetype, path, args)
 
     elif filetype == "vcf" or filetype == "bcf":
         return vcf.VcfReader(path)

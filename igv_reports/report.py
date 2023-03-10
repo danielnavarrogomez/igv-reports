@@ -81,7 +81,10 @@ def create_report(args):
     # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
 
     for config in trackjson:
-        reader = utils.getreader(config, None, args)
+        if "format" in config.keys():
+            reader = utils.getreader(config, config["format"], args)
+        else:
+            reader = utils.getreader(config, None, args)
         trackconfigs.append({
             "config": config,
             "reader": reader
@@ -201,14 +204,16 @@ def create_report(args):
                         trackobj["format"] = "bam"
                     if "name" not in trackobj:
                         trackobj["name"] = default_trackobj["url"]
+                    
+
+                reader = tc["reader"]
+                data = reader.slice(region, region2)
+                trackobj["url"] = datauri.get_data_uri(data)
 
                 # Indexes are not used with data URIs
                 if "indexURL" in trackobj:
                     del trackobj["indexURL"]
 
-                reader = tc["reader"]
-                data = reader.slice(region, region2)
-                trackobj["url"] = datauri.get_data_uri(data)
                 track_objects.append(trackobj)
 
             track_order = 1

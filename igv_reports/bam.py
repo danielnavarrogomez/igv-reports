@@ -3,9 +3,10 @@ from igv_reports.chralias import build_aliastable
 
 class BamReader:
 
-    def __init__(self, filetype, filename, args = None):
+    def __init__(self, filetype, filename, args = None, indexfile = None):
         self.filtetype = filetype
         self.filename = filename
+        self.indexfile = indexfile
         self.args = args
 
         samargs = ["-H", filename]
@@ -22,6 +23,10 @@ class BamReader:
         if self.filtetype == "cram" and self.args is not None:
             samargs.append("-T")
             samargs.append(self.args.fasta)
+
+        if self.indexfile is not None:
+            samargs.append("-X")
+            samargs.append(self.indexfile)
 
         if self.args is not None and hasattr(self.args, "exclude_flags"):
             if self.args.exclude_flags != 0:
